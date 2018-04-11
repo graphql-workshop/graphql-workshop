@@ -1,6 +1,9 @@
 import ApolloClient, {gql} from 'apollo-boost';
 import React, {Component} from 'react';
 import {ApolloProvider, Query} from 'react-apollo';
+
+import {RepoFragment, Repo} from './Repo';
+
 import './App.css';
 
 const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
@@ -27,16 +30,14 @@ const UserReposQuery = gql`
         totalCount
         edges {
           node {
-            id
-            name
-            owner {
-              login
-            }
+            ...RepoFragment
           }
         }
       }
     }
   }
+
+  ${RepoFragment}
 `;
 
 class App extends Component {
@@ -91,9 +92,7 @@ class App extends Component {
                     {data.user.repositories.totalCount} total):
                     <ul className="user-repos">
                       {data.user.repositories.edges.map(edge => (
-                        <li key={edge.node.id}>
-                          {edge.node.owner.login}/{edge.node.name}
-                        </li>
+                        <Repo repo={edge.node} key={edge.node.id} />
                       ))}
                     </ul>
                   </div>
