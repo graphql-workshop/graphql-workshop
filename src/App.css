@@ -8,3 +8,11 @@
   margin-top: 1em;
   text-align: left;
 }
+
+.repos-login-input {
+  margin-bottom: 1em;
+}
+
+.repo-count-input {
+  width: 30px;
+}
