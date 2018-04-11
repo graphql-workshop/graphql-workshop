@@ -20,7 +20,8 @@ const ViewerQuery = gql`
   query ViewerQuery {
     viewer {
       login
-      avatarUrl(size: 50)
+      smallAvatar: avatarUrl(size: 50)
+      bigAvatar: avatarUrl(size: 250)
     }
   }
 `;
@@ -39,13 +40,27 @@ class App extends Component {
               return (
                 <div>
                   Congratulations! You are authenticated with GitHub as{' '}
-                  {data.viewer.login}{' '}
-                  <img
-                    src={data.viewer.avatarUrl}
-                    width={50}
-                    height={50}
-                    alt="avatar"
-                  />
+                  {data.viewer.login}.
+                  <div className="avatars">
+                    <div>
+                      Tiny avatar: <br />
+                      <img
+                        alt="small avatar"
+                        src={data.viewer.smallAvatar}
+                        width={50}
+                        height={50}
+                      />
+                    </div>
+                    <div>
+                      Giant avatar: <br />
+                      <img
+                        alt="big avatar"
+                        src={data.viewer.bigAvatar}
+                        width={250}
+                        height={250}
+                      />
+                    </div>
+                  </div>
                 </div>
               );
             }}
