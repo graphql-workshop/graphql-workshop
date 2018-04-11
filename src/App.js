@@ -17,9 +17,13 @@ const client = new ApolloClient({
 });
 
 const UserReposQuery = gql`
-  query UserReposQuery {
-    user(login: "leebyron") {
-      repositories(first: 20, orderBy: {field: STARGAZERS, direction: DESC}) {
+  query UserReposQuery($login: String!, $count: Int!) {
+    user(login: $login) {
+      login
+      repositories(
+        first: $count
+        orderBy: {field: STARGAZERS, direction: DESC}
+      ) {
         totalCount
         edges {
           node {
@@ -36,31 +40,67 @@ const UserReposQuery = gql`
 `;
 
 class App extends Component {
+  state = {login: 'leebyron', loginInput: 'leebyron', repoCount: 5};
+  _handleLoginInputChange = event => {
+    this.setState({loginInput: event.target.value});
+  };
+  _handleKeyPress = event => {
+    if (event.key === 'Enter') {
+      this.setState({login: this.state.loginInput});
+    }
+  };
+  _handleRepoCountChange = event => {
+    this.setState({repoCount: parseInt(event.target.value, 10)});
+  };
   render() {
     return (
       <ApolloProvider client={client}>
         <div className="App">
           <h1>GraphQL Playground</h1>
-          <Query query={UserReposQuery}>
-            {({loading, error, data}) => {
-              if (loading) return <div>Loading...</div>;
-              if (error)
-                return <div>Whoops, there was an error: {error.message}</div>;
-              return (
-                <div>
-                  Lee's GitHub repos (first 20 of{' '}
-                  {data.user.repositories.totalCount} total):
-                  <ul className="user-repos">
-                    {data.user.repositories.edges.map(edge => (
-                      <li key={edge.node.id}>
-                        {edge.node.owner.login}/{edge.node.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            }}
-          </Query>
+          <div className="repos-container">
+            <div className="repos-login-input">
+              Fetch{' '}
+              <input
+                className="repo-count-input"
+                value={this.state.repoCount}
+                onChange={this._handleRepoCountChange}
+                type="number"
+              />{' '}
+              repos for{' '}
+              <input
+                value={this.state.loginInput}
+                onChange={this._handleLoginInputChange}
+                onKeyPress={this._handleKeyPress}
+                type="text"
+              />
+            </div>
+            <Query
+              query={UserReposQuery}
+              variables={{
+                login: this.state.login,
+                count: this.state.repoCount,
+              }}>
+              {({loading, error, data}) => {
+                if (loading) return <div>Loading...</div>;
+                if (error)
+                  return <div>Whoops, there was an error: {error.message}</div>;
+                return (
+                  <div>
+                    {data.user.login}'s GitHub repos (first{' '}
+                    {this.state.repoCount} of{' '}
+                    {data.user.repositories.totalCount} total):
+                    <ul className="user-repos">
+                      {data.user.repositories.edges.map(edge => (
+                        <li key={edge.node.id}>
+                          {edge.node.owner.login}/{edge.node.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              }}
+            </Query>
+          </div>
         </div>
       </ApolloProvider>
     );
