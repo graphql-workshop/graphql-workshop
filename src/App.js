@@ -16,12 +16,21 @@ const client = new ApolloClient({
   },
 });
 
-const ViewerQuery = gql`
-  query ViewerQuery {
-    viewer {
-      login
-      smallAvatar: avatarUrl(size: 50)
-      bigAvatar: avatarUrl(size: 250)
+const UserReposQuery = gql`
+  query UserReposQuery {
+    user(login: "leebyron") {
+      repositories(first: 20, orderBy: {field: STARGAZERS, direction: DESC}) {
+        totalCount
+        edges {
+          node {
+            id
+            name
+            owner {
+              login
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -32,33 +41,22 @@ class App extends Component {
       <ApolloProvider client={client}>
         <div className="App">
           <h1>GraphQL Playground</h1>
-          <Query query={ViewerQuery}>
+          <Query query={UserReposQuery}>
             {({loading, error, data}) => {
               if (loading) return <div>Loading...</div>;
               if (error)
                 return <div>Whoops, there was an error: {error.message}</div>;
               return (
                 <div>
-                  Congratulations! You are authenticated with GitHub as{' '}
-                  {data.viewer.login}.
-                  <div className="avatars">
-                    <div>
-                      Tiny avatar: <br />
-                      <img
-                        src={data.viewer.smallAvatar}
-                        width={50}
-                        height={50}
-                      />
-                    </div>
-                    <div>
-                      Giant avatar: <br />
-                      <img
-                        src={data.viewer.bigAvatar}
-                        width={250}
-                        height={250}
-                      />
-                    </div>
-                  </div>
+                  Lee's GitHub repos (first 20 of{' '}
+                  {data.user.repositories.totalCount} total):
+                  <ul className="user-repos">
+                    {data.user.repositories.edges.map(edge => (
+                      <li key={edge.node.id}>
+                        {edge.node.owner.login}/{edge.node.name}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               );
             }}
