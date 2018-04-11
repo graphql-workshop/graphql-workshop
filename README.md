@@ -1,13 +1,5 @@
 ## GraphQL Workshop
 
-Download dependencies with `yarn` or `npm install`.
+This branch shows how to run a simple query. If everything went well, you see the text "Congratulations! You are authenticated with GitHub as <your-github-login>."
 
-Create a personal access token on GitHub [https://github.com/settings/tokens](https://github.com/settings/tokens).
-
-Export your token as `REACT_APP_GITHUB_TOKEN` and run `yarn start`
-
-```
-REACT_APP_GITHUB_TOKEN=abcd123 yarn start
-```
-
-Your browser should automatically open to localhost:3000 and you'll see a page with the heading "GraphQL Playground".
+Next up: [Arguments](https://github.com/dwwoelfel/graphql-workshop/tree/arguments)
