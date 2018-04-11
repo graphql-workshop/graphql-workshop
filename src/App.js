@@ -20,6 +20,7 @@ const ViewerQuery = gql`
   query ViewerQuery {
     viewer {
       login
+      avatarUrl(size: 50)
     }
   }
 `;
@@ -38,7 +39,13 @@ class App extends Component {
               return (
                 <div>
                   Congratulations! You are authenticated with GitHub as{' '}
-                  {data.viewer.login}.
+                  {data.viewer.login}{' '}
+                  <img
+                    src={data.viewer.avatarUrl}
+                    width={50}
+                    height={50}
+                    alt="avatar"
+                  />
                 </div>
               );
             }}
