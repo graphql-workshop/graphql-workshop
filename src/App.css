@@ -16,3 +16,12 @@
 .repo-count-input {
   width: 30px;
 }
+
+.repo-star-input {
+  cursor: pointer;
+}
+
+.repo-star-input.loading {
+  cursor: wait;
+  pointer-events: none;
+}
