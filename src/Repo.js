@@ -59,8 +59,38 @@ export class Repo extends Component {
                     }
                     onClick={() =>
                       repo.viewerHasStarred
-                        ? unStar({variables: {repoId: repo.id}})
-                        : addStar({variables: {repoId: repo.id}})
+                        ? unStar({
+                            variables: {repoId: repo.id},
+                            optimisticResponse: {
+                              removeStar: {
+                                __typename: 'Mutation',
+                                starrable: {
+                                  ...repo,
+                                  viewerHasStarred: false,
+                                  stargazers: {
+                                    ...repo.stargazers,
+                                    totalCount: repo.stargazers.totalCount - 1,
+                                  },
+                                },
+                              },
+                            },
+                          })
+                        : addStar({
+                            variables: {repoId: repo.id},
+                            optimisticResponse: {
+                              addStar: {
+                                __typename: 'Mutation',
+                                starrable: {
+                                  ...repo,
+                                  viewerHasStarred: true,
+                                  stargazers: {
+                                    ...repo.stargazers,
+                                    totalCount: repo.stargazers.totalCount + 1,
+                                  },
+                                },
+                              },
+                            },
+                          })
                     }>
                     ({repo.viewerHasStarred ? '\u2605' : '\u2606'}{' '}
                   </span>
